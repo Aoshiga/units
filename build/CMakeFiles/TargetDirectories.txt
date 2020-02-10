@@ -1,3 +1,0 @@
-/mnt/e/school/s6/units/build/CMakeFiles/rebuild_cache.dir
-/mnt/e/school/s6/units/build/CMakeFiles/testUnits.dir
-/mnt/e/school/s6/units/build/CMakeFiles/edit_cache.dir
