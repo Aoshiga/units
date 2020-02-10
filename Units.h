@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <ratio>
-
+#include <stdio.h>
 namespace phy {
 
   /*
@@ -44,24 +44,27 @@ namespace phy {
     intmax_t value;
 
     Qty(intmax_t v){
-      this.value = v;
+      this->value = v;
     };
 
     template<typename ROther>
     Qty& operator+=(Qty<U, ROther> other){
         typedef std::ratio_divide< R, ROther > newRatio;  
-        auto sum  = other.value + this.value; 
-        Qty * toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sum);
-        return toRet;
+        intmax_t sum  = other.value + this->value; 
+        printf("%ld\n" ,sum );
+        Qty *cont =  new Qty<U,newRatio>(sum);
+        printf("%ld\n" ,cont->value );
+
+        return *cont;
     }
 
     template<typename ROther>
     Qty& operator-=(Qty<U, ROther> other){
        typedef std::ratio_divide< R, ROther > newRatio;  
 
-        auto sub  = other.value - this.value; 
-        Qty * toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sub);
-        return toRet;
+        auto sub  = this->value - other.value ; 
+        Qty * toRet = new Qty<U,newRatio>(sub);
+        return *toRet;
     }
 
   };
@@ -82,10 +85,10 @@ namespace phy {
    * Some weird quantities
    */
 
-  using Mile = Qty<Metre, std::ratio<160934, 100> /* implementation defined */;
-  using Yard = Qty<Metre, std::ratio<10000, 9144> /* implementation defined */;
-  using Foot = Qty<Metre, std::ratio<10000, 3048> /* implementation defined */;
-  using Inch = Qty<Metre, std::ratio<10000, 254> /* implementation defined */;
+  using Mile = Qty<Metre, std::ratio<160934, 100>> /* implementation defined */;
+  using Yard = Qty<Metre, std::ratio<10000, 9144>> /* implementation defined */;
+  using Foot = Qty<Metre, std::ratio<10000, 3048>> /* implementation defined */;
+  using Inch = Qty<Metre, std::ratio<10000, 254>> /* implementation defined */;
 
   /*
    * Comparison operators
@@ -122,11 +125,11 @@ namespace phy {
   //template<typename U1, typename R1, typename U2, typename R2>
   //* implementation defined */ operator*(Qty<U1, R1> q1, Qty<U2, R2> q2);
 
-  template<typename U1, typename R1, typename U2, typename R2>
-  Qty& operator/(Qty<U1, R1> q1, Qty<U2, R2> q2){
+ /* template<typename U1, typename R1, typename U2, typename R2>
+  details operator/(Qty<U1, R1> q1, Qty<U2, R2> q2){
 
-
-  }
+    return new Qty<std::ratio_divide<U1,U2>>(1);
+  }*/
 
 
   /*
@@ -153,7 +156,7 @@ namespace phy {
 
   
   namespace details {
-    using Velocity  = Unit<1,0,-1,0,0,0,0,0>;
+    using Velocity  = Unit<1,0,-1,0,0,0,0>;
 
   }
 
