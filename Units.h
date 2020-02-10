@@ -9,7 +9,7 @@ namespace phy {
   /*
    * A unit defined in terms of the base units
    */
-  template<int Metre, int Kilogram, int Second, int Ampere, int Kelvin, int Mole, int Candela>
+  template<int Metre, int Kilogram, int Second, int Ampere, int Kelvin, int Mole, int Candela, int Radian>
   struct Unit {
     static constexpr int metre = Metre;
     static constexpr int kilogram = Kilogram;
@@ -18,20 +18,21 @@ namespace phy {
     static constexpr int kelvin = Kelvin;
     static constexpr int mole = Mole;
     static constexpr int candela = Candela;
+    static constexpr int radian = Radian;
   };
 
   /*
    * Various type aliases
    */
 
-  using Metre     = Unit<1,0,0,0,0,0,0>;
-  using Kilogram  = Unit<0,1,0,0,0,0,0>;
-  using Second    = Unit<0,0,1,0,0,0,0>;
-  using Ampere    = Unit<0,0,0,1,0,0,0>;
-  using Kelvin    = Unit<0,0,0,0,1,0,0>;
-  using Mole      = Unit<0,0,0,0,0,1,0>;
-  using Candela   = Unit<0,0,0,0,0,0,1>;
-  using Radian    = /* implementation defined */;
+  using Metre     = Unit<1,0,0,0,0,0,0,0>;
+  using Kilogram  = Unit<0,1,0,0,0,0,0,0>;
+  using Second    = Unit<0,0,1,0,0,0,0,0>;
+  using Ampere    = Unit<0,0,0,1,0,0,0,0>;
+  using Kelvin    = Unit<0,0,0,0,1,0,0,0>;
+  using Mole      = Unit<0,0,0,0,0,1,0,0>;
+  using Candela   = Unit<0,0,0,0,0,0,1,0>;
+  using Radian    = Unit<0,0,0,0,0,0,0,1>;
 
   /*
    * A quantity is a value associated with a unit and a ratio
@@ -69,10 +70,10 @@ namespace phy {
    * Some weird quantities
    */
 
-  using Mile = /* implementation defined */;
-  using Yard = /* implementation defined */;
-  using Foot = /* implementation defined */;
-  using Inch = /* implementation defined */;
+  using Mile = Qty<Metre, std::ratio<1609.34, 1> /* implementation defined */;
+  using Yard = Qty<Metre, std::ratio<0.9144, 1> /* implementation defined */;
+  using Foot = Qty<Metre, std::ratio<0.3048, 1> /* implementation defined */;
+  using Inch = Qty<Metre, std::ratio<0.0254, 1> /* implementation defined */;
 
   /*
    * Comparison operators
@@ -125,13 +126,17 @@ namespace phy {
      * Some user-defined literals
      */
 
-    Length operator "" _metres(unsigned long int val);
-    Mass operator "" _kilograms(unsigned long int val);
-    Time operator "" _seconds(unsigned long int val);
-    Current operator "" _amperes(unsigned long int val);
-    Temperature operator "" _kelvins(unsigned long int val);
-    Amount operator "" _moles(unsigned long int val);
-    LuminousIntensity operator "" _candelas(unsigned long int val);
+    Length operator "" _metres(unsigned long long int val);
+    Mass operator "" _kilograms(unsigned long long int val);
+    Time operator "" _seconds(unsigned long long int val);
+    Current operator "" _amperes(unsigned long long int val);
+    Temperature operator "" _kelvins(unsigned long long int val);
+    Amount operator "" _moles(unsigned long long int val);
+    LuminousIntensity operator "" _candelas(unsigned long long int val);
+
+  }
+
+  namespace details {
 
   }
 
