@@ -70,10 +70,10 @@ namespace phy {
    * Some weird quantities
    */
 
-  using Mile = Qty<Metre, std::ratio<1609.34, 1> /* implementation defined */;
-  using Yard = Qty<Metre, std::ratio<0.9144, 1> /* implementation defined */;
-  using Foot = Qty<Metre, std::ratio<0.3048, 1> /* implementation defined */;
-  using Inch = Qty<Metre, std::ratio<0.0254, 1> /* implementation defined */;
+  using Mile = Qty<Metre, std::ratio<160934, 100> /* implementation defined */;
+  using Yard = Qty<Metre, std::ratio<10000, 9144> /* implementation defined */;
+  using Foot = Qty<Metre, std::ratio<10000, 3048> /* implementation defined */;
+  using Inch = Qty<Metre, std::ratio<10000, 254> /* implementation defined */;
 
   /*
    * Comparison operators
@@ -137,6 +137,7 @@ namespace phy {
   }
 
   namespace details {
+    using Velocity  = Unit<1,0,-1,0,0,0,0,0>;
 
   }
 
