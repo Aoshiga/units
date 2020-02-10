@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <ratio>
-
+#include <stdio.h>
 namespace phy {
 
   /*
@@ -44,24 +44,25 @@ namespace phy {
     intmax_t value;
 
     Qty(intmax_t v){
-      this.value = v;
+      this->value = v;
     };
 
     template<typename ROther>
     Qty& operator+=(Qty<U, ROther> other){
         typedef std::ratio_divide< R, ROther > newRatio;
-        auto sum  = other.value + this.value;
-        Qty * toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sum);
-        return toRet;
+        intmax_t sum  = other.value + this->value;
+        Qty *cont =  new Qty<U,newRatio>(sum);
+
+        return *cont;
     }
 
     template<typename ROther>
     Qty& operator-=(Qty<U, ROther> other){
        typedef std::ratio_divide< R, ROther > newRatio;
 
-        auto sub  = other.value - this.value;
-        Qty * toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sub);
-        return toRet;
+        auto sub  = this->value - other.value ;
+        Qty * toRet = new Qty<U,newRatio>(sub);
+        return *toRet;
     }
 
   };
@@ -117,10 +118,13 @@ namespace phy {
   Qty<U, std::ratio_add<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
     // return Qty<U, std::ratio_add<R1, R2>>(q1.value + q2.value);
 
-    typedef std::ratio_divide< R1, R2 > newRatio;
-    auto sum  = q1.value + q2.value;
-    Qty<U, std::ratio_add<R1, R2>> toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sum);
-    return toRet;
+    typedef std::ratio_add< R1, R2 > newRatio;
+    intmax_t sum  = q1.value + q2.value;
+    Qty<U, std::ratio_add<R1, R2>> cont =  Qty<U,newRatio>(sum);
+    return cont;
+
+
+
   }
 
   //template<typename U, typename R1, typename R2>
