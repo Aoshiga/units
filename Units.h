@@ -82,10 +82,10 @@ namespace phy {
    * Some weird quantities
    */
 
-  //using Mile = /* implementation defined */;
- // using Yard = /* implementation defined */;
-  //using Foot = /* implementation defined */;
-  //using Inch = /* implementation defined */;
+  using Mile = Qty<Metre, std::ratio<160934, 100> /* implementation defined */;
+  using Yard = Qty<Metre, std::ratio<10000, 9144> /* implementation defined */;
+  using Foot = Qty<Metre, std::ratio<10000, 3048> /* implementation defined */;
+  using Inch = Qty<Metre, std::ratio<10000, 254> /* implementation defined */;
 
   /*
    * Comparison operators
@@ -148,6 +148,12 @@ namespace phy {
     Temperature operator "" _kelvins(unsigned long long int val);
     Amount operator "" _moles(unsigned long long int val);
     LuminousIntensity operator "" _candelas(unsigned long long int val);
+
+  }
+
+  
+  namespace details {
+    using Velocity  = Unit<1,0,-1,0,0,0,0,0>;
 
   }
 
