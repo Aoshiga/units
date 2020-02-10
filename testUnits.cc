@@ -12,7 +12,8 @@ int main(int argc, char *argv[]) {
 TEST(DEBUG, DEBUG) {
   using namespace phy::literals;
 
-  auto velocity = 100000_metres / 3600_seconds; // 100 km/h
+  // auto velocity = 100000_metres / 3600_seconds; // 100 km/h
+  auto length = 100_metres + 10_metres;
   /*phy::Qty<Metre, std ::milli> mm(32);
   auto nm = phy ::qtyCast<phy ::Qty<Metre, std ::nano>>(mm);*/
 }

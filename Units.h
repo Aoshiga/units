@@ -49,17 +49,17 @@ namespace phy {
 
     template<typename ROther>
     Qty& operator+=(Qty<U, ROther> other){
-        typedef std::ratio_divide< R, ROther > newRatio;  
-        auto sum  = other.value + this.value; 
+        typedef std::ratio_divide< R, ROther > newRatio;
+        auto sum  = other.value + this.value;
         Qty * toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sum);
         return toRet;
     }
 
     template<typename ROther>
     Qty& operator-=(Qty<U, ROther> other){
-       typedef std::ratio_divide< R, ROther > newRatio;  
+       typedef std::ratio_divide< R, ROther > newRatio;
 
-        auto sub  = other.value - this.value; 
+        auto sub  = other.value - this.value;
         Qty * toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sub);
         return toRet;
     }
@@ -82,10 +82,10 @@ namespace phy {
    * Some weird quantities
    */
 
-  using Mile = Qty<Metre, std::ratio<160934, 100> /* implementation defined */;
-  using Yard = Qty<Metre, std::ratio<10000, 9144> /* implementation defined */;
-  using Foot = Qty<Metre, std::ratio<10000, 3048> /* implementation defined */;
-  using Inch = Qty<Metre, std::ratio<10000, 254> /* implementation defined */;
+  using Mile = Qty<Metre, std::ratio<160934, 100>> /* implementation defined */;
+  using Yard = Qty<Metre, std::ratio<10000, 9144>> /* implementation defined */;
+  using Foot = Qty<Metre, std::ratio<10000, 3048>> /* implementation defined */;
+  using Inch = Qty<Metre, std::ratio<10000, 254>> /* implementation defined */;
 
   /*
    * Comparison operators
@@ -113,8 +113,15 @@ namespace phy {
    * Arithmetic operators
    */
 
-  //template<typename U, typename R1, typename R2>
-  //* implementation defined */ operator+(Qty<U, R1> q1, Qty<U, R2> q2);
+  template<typename U, typename R1, typename R2>
+  Qty<U, std::ratio_add<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
+    // return Qty<U, std::ratio_add<R1, R2>>(q1.value + q2.value);
+
+    typedef std::ratio_divide< R1, R2 > newRatio;
+    auto sum  = q1.value + q2.value;
+    Qty<U, std::ratio_add<R1, R2>> toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sum);
+    return toRet;
+  }
 
   //template<typename U, typename R1, typename R2>
   //* implementation defined */ operator-(Qty<U, R1> q1, Qty<U, R2> q2);
@@ -122,11 +129,10 @@ namespace phy {
   //template<typename U1, typename R1, typename U2, typename R2>
   //* implementation defined */ operator*(Qty<U1, R1> q1, Qty<U2, R2> q2);
 
-  template<typename U1, typename R1, typename U2, typename R2>
-  Qty& operator/(Qty<U1, R1> q1, Qty<U2, R2> q2){
-
-
-  }
+  // template<typename U1, typename R1, typename U2, typename R2>
+  // Qty<U1, std::ratio_divide<R1, R2>> operator/(Qty<U1, R1> q1, Qty<U2, R2> q2) {
+  //   return Qty<U, std::ratio_divide<R1, R2>>(q1.value / q2.value);
+  // }
 
 
   /*
@@ -151,9 +157,9 @@ namespace phy {
 
   }
 
-  
+
   namespace details {
-    using Velocity  = Unit<1,0,-1,0,0,0,0,0>;
+    using Velocity  = Unit<1,0,-1,0,0,0,0>;
 
   }
 
