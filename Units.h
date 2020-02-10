@@ -31,7 +31,7 @@ namespace phy {
   using Kelvin    = Unit<0,0,0,0,1,0,0>;
   using Mole      = Unit<0,0,0,0,0,1,0>;
   using Candela   = Unit<0,0,0,0,0,0,1>;
-  using Radian    = /* implementation defined */;
+ // using Radian    = /* implementation defined */;
 
   /*
    * A quantity is a value associated with a unit and a ratio
@@ -43,13 +43,26 @@ namespace phy {
 
     intmax_t value;
 
-    Qty(intmax_t v);
+    Qty(intmax_t v){
+      this.value = v;
+    };
 
     template<typename ROther>
-    Qty& operator+=(Qty<U, ROther> other);
+    Qty& operator+=(Qty<U, ROther> other){
+        typedef std::ratio_divide< R, ROther > newRatio;  
+        auto sum  = other.value + this.value; 
+        Qty * toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sum);
+        return toRet;
+    }
 
     template<typename ROther>
-    Qty& operator-=(Qty<U, ROther> other);
+    Qty& operator-=(Qty<U, ROther> other){
+       typedef std::ratio_divide< R, ROther > newRatio;  
+
+        auto sub  = other.value - this.value; 
+        Qty * toRet = new Qty<U,std::ratio<newRatio::num,newRatio::den>>(sub);
+        return toRet;
+    }
 
   };
 
@@ -69,10 +82,10 @@ namespace phy {
    * Some weird quantities
    */
 
-  using Mile = /* implementation defined */;
-  using Yard = /* implementation defined */;
-  using Foot = /* implementation defined */;
-  using Inch = /* implementation defined */;
+  //using Mile = /* implementation defined */;
+ // using Yard = /* implementation defined */;
+  //using Foot = /* implementation defined */;
+  //using Inch = /* implementation defined */;
 
   /*
    * Comparison operators
@@ -100,24 +113,27 @@ namespace phy {
    * Arithmetic operators
    */
 
-  template<typename U, typename R1, typename R2>
-  /* implementation defined */ operator+(Qty<U, R1> q1, Qty<U, R2> q2);
+  //template<typename U, typename R1, typename R2>
+  //* implementation defined */ operator+(Qty<U, R1> q1, Qty<U, R2> q2);
 
-  template<typename U, typename R1, typename R2>
-  /* implementation defined */ operator-(Qty<U, R1> q1, Qty<U, R2> q2);
+  //template<typename U, typename R1, typename R2>
+  //* implementation defined */ operator-(Qty<U, R1> q1, Qty<U, R2> q2);
+
+  //template<typename U1, typename R1, typename U2, typename R2>
+  //* implementation defined */ operator*(Qty<U1, R1> q1, Qty<U2, R2> q2);
 
   template<typename U1, typename R1, typename U2, typename R2>
-  /* implementation defined */ operator*(Qty<U1, R1> q1, Qty<U2, R2> q2);
+  Qty& operator/(Qty<U1, R1> q1, Qty<U2, R2> q2){
 
-  template<typename U1, typename R1, typename U2, typename R2>
-  /* implementation defined */ operator/(Qty<U1, R1> q1, Qty<U2, R2> q2);
+
+  }
 
 
   /*
    * Cast function between two quantities
    */
-  template<ResQty, U, R>
-  ResQty qtyCast(Qty<U,R>);
+  //template<ResQty, U, R>
+  //ResQty qtyCast(Qty<U,R>);
 
   namespace literals {
 
@@ -125,13 +141,13 @@ namespace phy {
      * Some user-defined literals
      */
 
-    Length operator "" _metres(unsigned long int val);
-    Mass operator "" _kilograms(unsigned long int val);
-    Time operator "" _seconds(unsigned long int val);
-    Current operator "" _amperes(unsigned long int val);
-    Temperature operator "" _kelvins(unsigned long int val);
-    Amount operator "" _moles(unsigned long int val);
-    LuminousIntensity operator "" _candelas(unsigned long int val);
+    Length operator "" _metres(unsigned long long int val);
+    Mass operator "" _kilograms(unsigned long long int val);
+    Time operator "" _seconds(unsigned long long int val);
+    Current operator "" _amperes(unsigned long long int val);
+    Temperature operator "" _kelvins(unsigned long long int val);
+    Amount operator "" _moles(unsigned long long int val);
+    LuminousIntensity operator "" _candelas(unsigned long long int val);
 
   }
 
