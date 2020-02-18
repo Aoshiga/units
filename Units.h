@@ -111,25 +111,36 @@ bool operator>=(Qty<U, R1> q1, Qty<U, R2> q2);
 
 template <typename U, typename R1, typename R2>
 Qty<U, std::ratio_add<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
-  // return Qty<U, std::ratio_add<R1, R2>>(q1.value + q2.value);
-
   typedef std::ratio_add<R1, R2> newRatio;
-  intmax_t sum = q1.value + q2.value;
-  Qty<U, std::ratio_add<R1, R2>> cont = Qty<U, newRatio>(sum);
+  intmax_t sum =(q1.value*R2::den) + (q2.value*R1::den);
+  auto cont = Qty<U, newRatio>(sum);
   return cont;
 }
 
-// template<typename U, typename R1, typename R2>
-//* implementation defined */ operator-(Qty<U, R1> q1, Qty<U, R2> q2);
+template <typename U, typename R1, typename R2>
+Qty<U, std::ratio_subtract<R1, R2>> operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
+  typedef std::ratio_subtract<R1, R2> newRatio;
+  intmax_t sum = (q1.value*R2::den) - (q2.value*R1::den);
+  auto cont = Qty<U, newRatio>(sum);
+  return cont;
+}
 
-// template<typename U1, typename R1, typename U2, typename R2>
-//* implementation defined */ operator*(Qty<U1, R1> q1, Qty<U2, R2> q2);
+template <typename U1, typename R1, typename U2, typename R2>
+Qty<U1, std::ratio_multiply<R1, R2>> operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
+  typedef std::ratio_multiply<R1, R2> newRatio;
+  intmax_t mul = (q1.value*R2::den) *  (q2.value*R1::den);
+  auto cont = Qty<U1, newRatio>(mul);
+  return cont;
+}
 
-// template<typename U1, typename R1, typename U2, typename R2>
-// Qty<U1, std::ratio_divide<R1, R2>> operator/(Qty<U1, R1> q1, Qty<U2, R2> q2)
-// {
-//   return Qty<U, std::ratio_divide<R1, R2>>(q1.value / q2.value);
-// }
+template<typename U1, typename R1, typename U2, typename R2>
+Qty<U1, std::ratio_divide<R1, R2>> operator/(Qty<U1, R1> q1, Qty<U2, R2> q2)
+{
+ typedef std::ratio_divide<R1, R2> newRatio;
+  intmax_t div = (q1.value*R2::den) / (q2.value*R1::den);
+  auto cont = Qty<U1, newRatio>(div);
+  return cont;
+}
 
 /*
  * Cast function between two quantities
