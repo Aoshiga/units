@@ -89,26 +89,53 @@ namespace phy {
   using Inch = Qty<Metre, std::ratio<10000, 254>> /* implementation defined */;
 
   /*
+   * Cast function between two quantities
+   */
+  template<typename ResQty, typename U, typename R>
+  ResQty qtyCast(Qty<U,R> &other) {
+    return Qty<U, typename ResQty::Ratio>((other.value*R::num*ResQty::Ratio::den)/(R::den*ResQty::Ratio::num));
+  }
+
+
+  /*
    * Comparison operators
    */
 
   template<typename U, typename R1, typename R2>
-  bool operator==(Qty<U, R1> q1, Qty<U, R2> q2);
+  bool operator==(Qty<U, R1> q1, Qty<U, R2> q2) {
+    auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+    return q2_convert.value == q1.value;
+  }
 
   template<typename U, typename R1, typename R2>
-  bool operator!=(Qty<U, R1> q1, Qty<U, R2> q2);
+  bool operator!=(Qty<U, R1> q1, Qty<U, R2> q2) {
+    auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+    return q2_convert.value != q1.value;
+  }
 
   template<typename U, typename R1, typename R2>
-  bool operator<(Qty<U, R1> q1, Qty<U, R2> q2);
+  bool operator<(Qty<U, R1> q1, Qty<U, R2> q2) {
+    auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+    return q2_convert.value < q1.value;
+  }
 
   template<typename U, typename R1, typename R2>
-  bool operator<=(Qty<U, R1> q1, Qty<U, R2> q2);
+  bool operator<=(Qty<U, R1> q1, Qty<U, R2> q2) {
+    auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+    return q2_convert.value <= q1.value;
+  }
 
   template<typename U, typename R1, typename R2>
-  bool operator>(Qty<U, R1> q1, Qty<U, R2> q2);
+  bool operator>(Qty<U, R1> q1, Qty<U, R2> q2) {
+    auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+    return q2_convert.value > q1.value;
+  }
 
   template<typename U, typename R1, typename R2>
-  bool operator>=(Qty<U, R1> q1, Qty<U, R2> q2);
+  bool operator>=(Qty<U, R1> q1, Qty<U, R2> q2) {
+    auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+    return q2_convert.value >= q1.value;
+  }
 
   /*
    * Arithmetic operators
@@ -122,28 +149,29 @@ namespace phy {
     intmax_t sum  = q1.value + q2.value;
     Qty<U, std::ratio_add<R1, R2>> cont =  Qty<U,newRatio>(sum);
     return cont;
-
-
-
   }
 
-  //template<typename U, typename R1, typename R2>
-  //* implementation defined */ operator-(Qty<U, R1> q1, Qty<U, R2> q2);
+  template<typename U, typename R1, typename R2>
+  Qty<U, std::ratio_subtract<R1, R2>> operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
+    typedef std::ratio_subtract< R1, R2 > newRatio;
+    intmax_t sum  = q1.value - q2.value;
+    Qty<U, std::ratio_subtract<R1, R2>> cont =  Qty<U,newRatio>(sum);
+    return cont;
+  }
 
-  //template<typename U1, typename R1, typename U2, typename R2>
-  //* implementation defined */ operator*(Qty<U1, R1> q1, Qty<U2, R2> q2);
+  // template<typename U1, typename R1, typename U2, typename R2>
+  // Qty<U1, std::ratio_mult<R1, R2>> operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
+  //   typedef std::ratio_mult< R1, R2 > newRatio;
+  //   intmax_t sum  = q1.value - q2.value;
+  //
+  //   Qty<U1, std::ratio_mult<R1, R2>> cont =  Qty<U,newRatio>(sum);
+  //   return cont;
+  // }
 
   // template<typename U1, typename R1, typename U2, typename R2>
   // Qty<U1, std::ratio_divide<R1, R2>> operator/(Qty<U1, R1> q1, Qty<U2, R2> q2) {
   //   return Qty<U, std::ratio_divide<R1, R2>>(q1.value / q2.value);
   // }
-
-
-  /*
-   * Cast function between two quantities
-   */
-  //template<ResQty, U, R>
-  //ResQty qtyCast(Qty<U,R>);
 
   namespace literals {
 
@@ -151,7 +179,9 @@ namespace phy {
      * Some user-defined literals
      */
 
-    Length operator "" _metres(unsigned long long int val);
+    Length operator "" _metres(unsigned long long int val) {
+      return val;
+    }
     Mass operator "" _kilograms(unsigned long long int val);
     Time operator "" _seconds(unsigned long long int val);
     Current operator "" _amperes(unsigned long long int val);
