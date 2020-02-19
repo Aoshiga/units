@@ -137,66 +137,78 @@ namespace phy {
     return q2_convert.value >= q1.value;
   }
 
+/*
+ * Arithmetic operators
+ */
+
+template <typename U, typename R1, typename R2>
+Qty<U, std::ratio_add<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
+  typedef std::ratio_add<R1, R2> newRatio;
+  intmax_t sum =(q1.value*R2::den) + (q2.value*R1::den);
+  auto cont = Qty<U, newRatio>(sum);
+  return cont;
+}
+
+template <typename U, typename R1, typename R2>
+Qty<U, std::ratio_subtract<R1, R2>> operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
+  typedef std::ratio_subtract<R1, R2> newRatio;
+  intmax_t sum = (q1.value*R2::den) - (q2.value*R1::den);
+  auto cont = Qty<U, newRatio>(sum);
+  return cont;
+}
+
+template <typename U1, typename R1, typename U2, typename R2>
+Qty<U1, std::ratio_multiply<R1, R2>> operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
+  typedef std::ratio_multiply<R1, R2> newRatio;
+  intmax_t mul = (q1.value*R2::den) *  (q2.value*R1::den);
+  auto cont = Qty<U1, newRatio>(mul);
+  return cont;
+}
+
+template<typename U1, typename R1, typename U2, typename R2>
+Qty<U1, std::ratio_divide<R1, R2>> operator/(Qty<U1, R1> q1, Qty<U2, R2> q2)
+{
+ typedef std::ratio_divide<R1, R2> newRatio;
+  intmax_t div = (q1.value*R2::den) / (q2.value*R1::den);
+  auto cont = Qty<U1, newRatio>(div);
+  return cont;
+}
+
+
+namespace literals {
   /*
-   * Arithmetic operators
+   * Some user-defined literals
    */
 
-  template<typename U, typename R1, typename R2>
-  Qty<U, std::ratio_add<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
-    // return Qty<U, std::ratio_add<R1, R2>>(q1.value + q2.value);
-
-    typedef std::ratio_add< R1, R2 > newRatio;
-    intmax_t sum  = q1.value + q2.value;
-    Qty<U, std::ratio_add<R1, R2>> cont =  Qty<U,newRatio>(sum);
-    return cont;
+  Length operator"" _metres(unsigned long long int val) {
+    return Qty<Metre, std::ratio<1, 1>>(val);
+  }
+  Mass operator"" _kilograms(unsigned long long int val) {
+    return Qty<Kilogram, std::ratio<1, 1>>(val);
+  }
+  Time operator"" _seconds(unsigned long long int val) {
+    return Qty<Second, std::ratio<1, 1>>(val);
+  }
+  Current operator"" _amperes(unsigned long long int val) {
+    return Qty<Ampere, std::ratio<1, 1>>(val);
+  }
+  Temperature operator"" _kelvins(unsigned long long int val) {
+    return Qty<Kelvin, std::ratio<1, 1>>(val);
+  }
+  Amount operator"" _moles(unsigned long long int val) {
+    return Qty<Mole, std::ratio<1, 1>>(val);
+  }
+  LuminousIntensity operator"" _candelas(unsigned long long int val) {
+    return Qty<Candela, std::ratio<1, 1>>(val);
   }
 
-  template<typename U, typename R1, typename R2>
-  Qty<U, std::ratio_subtract<R1, R2>> operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
-    typedef std::ratio_subtract< R1, R2 > newRatio;
-    intmax_t sum  = q1.value - q2.value;
-    Qty<U, std::ratio_subtract<R1, R2>> cont =  Qty<U,newRatio>(sum);
-    return cont;
-  }
-
-  // template<typename U1, typename R1, typename U2, typename R2>
-  // Qty<U1, std::ratio_mult<R1, R2>> operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
-  //   typedef std::ratio_mult< R1, R2 > newRatio;
-  //   intmax_t sum  = q1.value - q2.value;
-  //
-  //   Qty<U1, std::ratio_mult<R1, R2>> cont =  Qty<U,newRatio>(sum);
-  //   return cont;
-  // }
-
-  // template<typename U1, typename R1, typename U2, typename R2>
-  // Qty<U1, std::ratio_divide<R1, R2>> operator/(Qty<U1, R1> q1, Qty<U2, R2> q2) {
-  //   return Qty<U, std::ratio_divide<R1, R2>>(q1.value / q2.value);
-  // }
-
-  namespace literals {
-
-    /*
-     * Some user-defined literals
-     */
-
-    Length operator "" _metres(unsigned long long int val) {
-      return val;
-    }
-    Mass operator "" _kilograms(unsigned long long int val);
-    Time operator "" _seconds(unsigned long long int val);
-    Current operator "" _amperes(unsigned long long int val);
-    Temperature operator "" _kelvins(unsigned long long int val);
-    Amount operator "" _moles(unsigned long long int val);
-    LuminousIntensity operator "" _candelas(unsigned long long int val);
-
-  }
-
+  } // namespace literals
 
   namespace details {
-    using Velocity  = Unit<1,0,-1,0,0,0,0>;
+  using Velocity = Unit<1, 0, -1, 0, 0, 0, 0>;
 
   }
 
-}
+} // namespace phy
 
 #endif // UNITS_H
