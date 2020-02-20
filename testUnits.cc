@@ -132,6 +132,18 @@ TEST(Metres, Millidivide) {
  // EXPECT_EQ(result.value, 15000);
 }
 
+TEST(Ampere, CentiPlusDeci) {
+  using namespace phy::literals;
+
+  // auto velocity = 100000_metres / 3600_seconds; // 100 km/h
+  phy::Qty<phy::Ampere, std::milli> mm(50); // 50 mm
+  phy::Qty<phy::Ampere, std::centi> cm(2); // 2 cm
+  auto result = mm + cm;
+
+  std::cout << result.value << std::endl;
+ EXPECT_EQ(result.value, 70);
+}
+
 TEST(Units, OperatorPlus){
   phy :: Qty <phy::Metre , phy::Foot::Ratio > foot (42);
   phy :: Qty <phy::Metre , std :: milli > mm (32);

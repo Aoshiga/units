@@ -49,16 +49,14 @@ namespace phy {
 
     template<typename ROther>
     Qty& operator+=(Qty<U, ROther> other){
-        typedef std::ratio_divide< R, ROther > newRatio;
         this->value = (this->value*ROther::den) + (other.value*R::den);
-        return *new Qty<U,newRatio>(this->value);
+        return *this;
     }
 
     template<typename ROther>
     Qty& operator-=(Qty<U, ROther> other){
-      typedef std::ratio_divide< R, ROther > newRatio;
       this->value = (this->value*ROther::den) - (other.value*R::den);
-      return *new Qty<U,newRatio>(this->value);
+      return *this;
     }
 
   };
@@ -138,11 +136,14 @@ namespace phy {
  */
 
 template <typename U, typename R1, typename R2>
-Qty<U, std::ratio_add<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
-  typedef std::ratio_add<R1, R2> newRatio;
-  intmax_t sum =(q1.value*R2::den) + (q2.value*R1::den);
-  auto cont = Qty<U, newRatio>(sum);
-  return cont;
+Qty<U, std::ratio_divide<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
+  typedef std::ratio_divide<R1, R2> newRatio;
+  if(std::ratio_equal<R1, R2>::value){
+    return Qty<U, newRatio>(q1.value + q2.value);
+  } else if(std::ratio_less<R1, R2>::value) {
+    return Qty<U, newRatio>(q1.value + qtyCast<Qty<U, R1>>(q2).value);
+  }
+  return Qty<U, newRatio>(qtyCast<Qty<U, R1>>(q1).value + q2.value);
 }
 
 template <typename U, typename R1, typename R2>
