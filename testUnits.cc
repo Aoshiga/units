@@ -10,62 +10,13 @@ int main(int argc, char *argv[]) {
   return RUN_ALL_TESTS();
 }
 
-TEST(Add, Metres) {
-  using namespace phy::literals;
-  auto length = 100_metres + 10_metres;
-  auto resLenght = 110_metres;
-  ASSERT_EQ(length.value, resLenght.value);
-}
-
-TEST(Add, Metres2) {
-  using namespace phy::literals;
-
-  auto val1 = phy::Qty<phy::Metre>(10);
-  auto val2 = phy::Qty<phy::Metre>(24);
-  auto val3 = val1 + val2;
-
-  std::cout<<val3.value<<"\n";
-
-
-  auto resVal = phy::Qty<phy::Metre>(34);
-
-  ASSERT_EQ(val3, resVal);
-}
-
-TEST(Add, Metres3) {
-  using namespace phy::literals;
-
-  phy::Qty<phy::Metre>val1(10);
-  phy::Qty<phy::Metre>val2(24);
-  val1 += val2;
-
-  std::cout<<val1.value<<"\n";
-
-
-  phy::Qty<phy::Metre>resVal(34);
-
-  ASSERT_EQ(val1, resVal);
-}
-
-// TEST(Add, OtherRatio) {
-//   using namespace phy::literals;
-//
-//   phy::Qty <Metre, std::milli > val1(10);
-//   phy::Qty <Metre, std::milli > val2(24);
-//   val1 += val2;
-//
-//   phy::Qty<Metre,std::milli>resVal(34);
-//
-//   ASSERT_EQ(val1, resVal);
-// }
-
-TEST(DEBUG, Test1) {
-  phy::Qty <phy::Metre, std::milli> mm (32);
+TEST(Metres, Cast) {
+  phy::Qty <phy::Metre, std::deci> mm (101245);
   auto nm = phy::qtyCast <phy::Qty <phy::Metre , std::kilo >>(mm);
 
   std::cout<<nm.value<<"\n";
 
-  // ASSERT_EQ(length, 110);
+  ASSERT_EQ(nm.value, 10);
 }
 
 TEST(Metres, AddTwoMetres) {
@@ -82,6 +33,30 @@ TEST(Metres, AddTwoMetres) {
   EXPECT_EQ(result.value, 1100);
 }
 
+TEST(Metres, AddTwoMetres2) {
+  using namespace phy::literals;
+
+  auto val1 = phy::Qty<phy::Metre>(10);
+  auto val2 = phy::Qty<phy::Metre>(24);
+  auto val3 = val1 + val2;
+
+  auto resVal = phy::Qty<phy::Metre>(34);
+
+  ASSERT_EQ(val3.value, resVal.value);
+}
+
+TEST(Metres, AddEqual) {
+  using namespace phy::literals;
+
+  phy::Qty<phy::Metre>val1(10);
+  phy::Qty<phy::Metre>val2(24);
+  val1 += val2;
+
+  phy::Qty<phy::Metre>resVal(34);
+
+  ASSERT_EQ(val1.value, resVal.value);
+}
+
 TEST(Metres, SubstractTwoMetres) {
   using namespace phy::literals;
 
@@ -93,6 +68,18 @@ TEST(Metres, SubstractTwoMetres) {
   std::cout << result.value << std::endl;
 
   EXPECT_EQ(result.value, -900);
+}
+
+TEST(Metres, SubstractEqual) {
+  using namespace phy::literals;
+
+  phy::Qty<phy::Metre>val1(10);
+  phy::Qty<phy::Metre>val2(24);
+  val1 -= val2;
+
+  phy::Qty<phy::Metre>resVal(34);
+
+  ASSERT_EQ(val1.value, resVal.value);
 }
 
 TEST(Metres, MultiplyLengths) {
@@ -132,6 +119,7 @@ TEST(Metres, MilliMult) {
   std::cout << result.value << std::endl;
   EXPECT_EQ(result.value, 15000);
 }
+
 TEST(Metres, Millidivide) {
   using namespace phy::literals;
 
@@ -142,4 +130,20 @@ TEST(Metres, Millidivide) {
 
   std::cout << result.value << std::endl;
  // EXPECT_EQ(result.value, 15000);
+}
+
+TEST(Units, OperatorPlus){
+  phy :: Qty <phy::Metre , phy::Foot::Ratio > foot (42);
+  phy :: Qty <phy::Metre , std :: milli > mm (32);
+  phy :: Qty <phy::Metre , std :: milli > mm2 (32);
+  phy :: Qty <phy::Metre , std :: milli > mm3 (42);
+  phy :: Qty <phy::Metre> m (10);
+  phy :: Qty <phy::Metre , std :: nano > nm (32000000);
+  phy :: Qty <phy::Metre , std :: nano > nm2 (42000000);
+  auto resmm = (mm + mm2);
+  EXPECT_EQ(resmm.value, 64);
+  auto resmm2 = mm2 + mm;
+  EXPECT_EQ(resmm2.value, 64);
+  auto resmm3 = foot + m;
+  EXPECT_EQ(resmm3.value, 22);
 }
