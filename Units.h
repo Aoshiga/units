@@ -77,10 +77,10 @@ namespace phy {
    * Some weird quantities
    */
 
-  using Mile = Qty<Metre, std::ratio<160934, 100>> /* implementation defined */;
-  using Yard = Qty<Metre, std::ratio<10000, 9144>> /* implementation defined */;
-  using Foot = Qty<Metre, std::ratio<10000, 3048>> /* implementation defined */;
-  using Inch = Qty<Metre, std::ratio<10000, 254>> /* implementation defined */;
+  using Mile = Qty<Metre, std::ratio<1609, 1>> /* implementation defined */;
+  using Yard = Qty<Metre, std::ratio<100, 109>> /* implementation defined */;
+  using Foot = Qty<Metre, std::ratio<100, 328>> /* implementation defined */;
+  using Inch = Qty<Metre, std::ratio<100, 3937>> /* implementation defined */;
 
   /*
    * Cast function between two quantities
@@ -138,12 +138,29 @@ namespace phy {
 template <typename U, typename R1, typename R2>
 Qty<U, std::ratio_divide<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
   typedef std::ratio_divide<R1, R2> newRatio;
-  if(std::ratio_equal<R1, R2>::value){
-    return Qty<U, newRatio>(q1.value + q2.value);
-  } else if(std::ratio_less<R1, R2>::value) {
-    return Qty<U, newRatio>(q1.value + qtyCast<Qty<U, R1>>(q2).value);
+    typedef std::ratio_divide<R1, R2> newRatio3;
+
+  printf("new num : %d , new den : %d\n",newRatio3::num ,newRatio3::den );
+   // printf("new num : %d , new den : %d\n",newRatio::num ,newRatio::den );
+
+
+  auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+
+  intmax_t sum = q1.value+q2.value;
+
+  if(std::ratio_greater<R1,R2>::value){
+      auto q1_convert = qtyCast<Qty<U, R2>>(q1);
+      printf("vall : %d\n",q1_convert.value);
+      sum =(q1_convert.value+q2.value);
+  }else if(std::ratio_less<R1,R2>::value){
+       auto q2_convert = qtyCast<Qty<U, R2>>(q2);
+      printf("vall : %d\n",q2_convert.value);
+      sum =(q2_convert.value+q1.value);
   }
-  return Qty<U, newRatio>(qtyCast<Qty<U, R1>>(q1).value + q2.value);
+
+  //intmax_t sum =((q1.value*R2::den) + (q2.value*R1::den))/newRatio::den;
+  auto cont = Qty<U, newRatio>(sum);
+  return cont;
 }
 
 template <typename U, typename R1, typename R2>
