@@ -73,11 +73,11 @@ TEST(Metres, SubstractTwoMetres) {
 TEST(Metres, SubstractEqual) {
   using namespace phy::literals;
 
-  phy::Qty<phy::Metre>val1(10);
+  phy::Qty<phy::Metre>val1(30);
   phy::Qty<phy::Metre>val2(24);
   val1 -= val2;
 
-  phy::Qty<phy::Metre>resVal(34);
+  phy::Qty<phy::Metre>resVal(6);
 
   ASSERT_EQ(val1.value, resVal.value);
 }

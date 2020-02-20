@@ -50,19 +50,15 @@ namespace phy {
     template<typename ROther>
     Qty& operator+=(Qty<U, ROther> other){
         typedef std::ratio_divide< R, ROther > newRatio;
-        intmax_t sum  = other.value + this->value;
-        Qty *cont =  new Qty<U,newRatio>(sum);
-
-        return *cont;
+        this->value = (this->value*ROther::den) + (other.value*R::den);
+        return *new Qty<U,newRatio>(this->value);
     }
 
     template<typename ROther>
     Qty& operator-=(Qty<U, ROther> other){
-       typedef std::ratio_divide< R, ROther > newRatio;
-
-        auto sub  = this->value - other.value ;
-        Qty * toRet = new Qty<U,newRatio>(sub);
-        return *toRet;
+      typedef std::ratio_divide< R, ROther > newRatio;
+      this->value = (this->value*ROther::den) - (other.value*R::den);
+      return *new Qty<U,newRatio>(this->value);
     }
 
   };
