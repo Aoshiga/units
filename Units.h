@@ -132,97 +132,88 @@ bool operator>=(Qty<U, R1> q1, Qty<U, R2> q2) {
 /*
  * Arithmetic operators
  */
-// template<class T, class F>
-// struct conditional<false, T, F> { typedef F type; };
-//
-// typedef std::conditional<std::ratio_greater<R1,R2>::value, R1, R2>::type Type;
-//
-// template<typename U, typename R1, typename R2>
-// Qty<U, Type> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
-//   printf("R1 ratio : %jd/%jd\n", R1::num, R1::den);
-//   printf("R2 ratio : %jd/%jd\n", R2::num, R2::den);
-//
-//   typedef std::ratio_divide<R1, R2> newRatio;
-//
-//   //printf("new ratio : %jd/%jd\n", newRatio::num, newRatio::den);
-//
-//   intmax_t sum = q1.value + q2.value;
-//
-//   if(std::ratio_greater<R1,R2>::value){
-//       auto q1_convert = qtyCast<Qty<U, R2>>(q1);
-//       printf("vall1 : %d\n",q1_convert.value);
-//       sum = q1_convert.value+q2.value;
-//   }else if(std::ratio_less<R1,R2>::value){
-//       auto q2_convert = qtyCast<Qty<U, R1>>(q2);
-//       printf("before : %d - after: %d\n",q2.value, q2_convert.value);
-//       sum = q2_convert.value+q1.value;
-//   }
-//
-//   auto cont = Qty<U, newRatio>(sum);
-//   return cont;
-// }
-
 template <typename U, typename R1, typename R2>
- Qty<U,typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
-  printf("R1 ratio : %jd/%jd\n", R1::num, R1::den);
-  printf("R2 ratio : %jd/%jd\n", R2::num, R2::den);
+Qty<U,typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
 
- typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
+  typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
 
   intmax_t sum = q1.value + q2.value;
 
-  if (std::ratio_greater<R1, R2>::value) {
+  if (std::ratio_greater<R1, R2>::value)
+  {
     auto q1_convert = qtyCast<Qty<U, R2>>(q1);
-    printf("convert greater : %jd\n", q1_convert.value);
-    sum = (q1_convert.value) + (q2.value);
-    printf("was greater : %jd\n", sum);
-
-
-  } else if (std::ratio_less<R1, R2>::value) {
+    sum = q1_convert.value + q2.value;
+  }
+  else if (std::ratio_less<R1, R2>::value)
+  {
     auto q2_convert = qtyCast<Qty<U, R1>>(q2);
-    printf("convert lesser : %jd\n", q2_convert.value);
-    sum = (q2_convert.value + q1.value);
-    printf("was lesser : %jd\n", sum);
-
+    sum = q2_convert.value + q1.value;
   }
 
-  printf("new ratio : %jd/%jd\n", newRatio::num, newRatio::den);
-
-  auto cont = Qty<U, newRatio>(sum);
-  return cont;
+  return Qty<U, newRatio>(sum);
 }
 
 template <typename U, typename R1, typename R2>
-Qty<U, std::ratio_divide<R1, R2>> operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
+Qty<U, typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
 
-  typedef std::ratio_divide<R1, R2> newRatio;
+  typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
+
   intmax_t sub = q1.value - q2.value;
-  //if the ratios are diffrent we cast to the smallest unit
-  if (std::ratio_greater<R1, R2>::value) {
+
+  if (std::ratio_greater<R1, R2>::value)
+  {
     auto q1_convert = qtyCast<Qty<U, R2>>(q1);
-    sub = (q1_convert.value) - (q2.value);
-  } else if (std::ratio_less<R1, R2>::value) {
-    auto q2_convert = qtyCast<Qty<U, R1>>(q2);
-    sub = (q1.value-q2_convert.value);
+    sub = q1_convert.value - q2.value;
   }
-  auto newQty = Qty<U, newRatio>(sub);
-  return newQty;
+  else if (std::ratio_less<R1, R2>::value)
+  {
+    auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+    sub = q1.value - q2_convert.value;
+  }
+
+  return Qty<U, newRatio>(sub);
 }
 
 template <typename U1, typename R1, typename U2, typename R2>
-Qty<U1, std::ratio_multiply<R1, R2>> operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
-  typedef std::ratio_multiply<R1, R2> newRatio;
-  intmax_t mul = (q1.value * R2::den) * (q2.value * R1::den);
-  auto cont = Qty<U1, newRatio>(mul);
-  return cont;
+Qty<U1, typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
+
+  typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
+
+  intmax_t mul = q1.value * q2.value;
+
+  if (std::ratio_greater<R1, R2>::value)
+  {
+    auto q1_convert = qtyCast<Qty<U1, R2>>(q1);
+    mul = q1_convert.value * q2.value;
+  }
+  else if (std::ratio_less<R1, R2>::value)
+  {
+    auto q2_convert = qtyCast<Qty<U1, R1>>(q2);
+    mul = q1.value * q2_convert.value;
+  }
+
+  return Qty<U1, newRatio>(mul);
 }
 
 template <typename U1, typename R1, typename U2, typename R2>
-Qty<U1, std::ratio_divide<R1, R2>> operator/(Qty<U1, R1> q1, Qty<U2, R2> q2) {
-  typedef std::ratio_divide<R1, R2> newRatio;
-  intmax_t div = (q1.value * R2::den) / (q2.value * R1::den);
-  auto cont = Qty<U1, newRatio>(div);
-  return cont;
+Qty<U1, typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator/(Qty<U1, R1> q1, Qty<U2, R2> q2) {
+
+  typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
+
+  intmax_t div = q1.value * q2.value;
+
+  if (std::ratio_greater<R1, R2>::value)
+  {
+    auto q1_convert = qtyCast<Qty<U1, R2>>(q1);
+    div = q1_convert.value / q2.value;
+  }
+  else if (std::ratio_less<R1, R2>::value)
+  {
+    auto q2_convert = qtyCast<Qty<U1, R1>>(q2);
+    div = q1.value / q2_convert.value;
+  }
+
+  return Qty<U1, newRatio>(div);
 }
 
 namespace literals {
