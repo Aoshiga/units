@@ -135,8 +135,8 @@ bool operator>=(Qty<U, R1> q1, Qty<U, R2> q2) {
 
 template <typename U, typename R1, typename R2>
 Qty<U, std::ratio_divide<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
-  //printf("R1 ratio : %jd/%jd\n", R1::num, R1::den);
-  //printf("R2 ratio : %jd/%jd\n", R2::num, R2::den);
+  printf("R1 ratio : %jd/%jd\n", R1::num, R1::den);
+  printf("R2 ratio : %jd/%jd\n", R2::num, R2::den);
 
   typedef std::ratio_divide<R1, R2> newRatio;
 

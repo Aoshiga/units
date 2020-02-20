@@ -228,3 +228,51 @@ TEST(Units, MultipleAdd){
   auto res2 = res1 + m; //273 + 1000
   EXPECT_EQ(res2.value, 1273);
 }
+
+TEST(Units, MultipleSubstract){
+  phy :: Qty <phy::Metre , std::kilo > km (15);
+  phy :: Qty <phy::Metre , std::hecto > hm (100);
+  phy :: Qty <phy::Metre > m1 (2000);
+  phy :: Qty <phy::Metre > m2 (1500);
+  auto res1 = km - hm; //15km - 100hm = 50hm
+  EXPECT_EQ(res1.value, 50);
+  auto res2 = res1 - m1; // 50hm - 2000m = 3000m
+  EXPECT_EQ(res2.value, 3000);
+  res2 -= m2; // 3000m - 1500m = 1500m
+  EXPECT_EQ(res2.value, 1500);
+}
+
+TEST(Units, MultipleMultiplicate){
+  phy :: Qty <phy::Metre , std::kilo > km (2);
+  phy :: Qty <phy::Metre , std::hecto > hm (10);
+  phy :: Qty <phy::Metre > m (200);
+  auto res1 = km * hm; //2km * 10hm = 20hm
+  EXPECT_EQ(res1.value, 20);
+  auto res2 = res1 - m; // 20hm * 2m = 4000m
+  EXPECT_EQ(res2.value, 4000);
+}
+
+TEST(Units, MultipleDivide){
+  phy :: Qty <phy::Metre , std::kilo > km (12);
+  phy :: Qty <phy::Metre , std::hecto > hm (20);
+  phy :: Qty <phy::Metre > m (200);
+  auto res1 = km / hm; //12km * 20hm = 6hm
+  EXPECT_EQ(res1.value, 6);
+  auto res2 = res1 - m; // 6hm * 200m = 3m
+  EXPECT_EQ(res2.value, 3);
+}
+
+TEST(Metres, MilliMultiAdd) {
+  using namespace phy::literals;
+
+  // auto velocity = 100000_metres / 3600_seconds; // 100 km/h
+  phy::Length length = 5_metres;
+  phy::Qty<phy::Metre, std::milli> length2(3); // 3 mm
+  auto result = length + length2;
+  auto result2 = result + length2;
+  std::cout << result.value << std::endl;
+  std::cout << result2.value << std::endl;
+
+  EXPECT_EQ(result.value, 5003);
+ EXPECT_EQ(result2.value, 5006);
+}
