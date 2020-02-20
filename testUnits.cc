@@ -26,6 +26,12 @@ TEST(Cast, FootToMeter){
   EXPECT_EQ(m.value, 12);
 }
 
+TEST(Cast, MeterToMilli){
+  phy::Qty <phy::Metre> m(1);
+  auto mm = phy::qtyCast <phy::Qty <phy::Metre, std::milli>>(m);
+  EXPECT_EQ(mm.value, 1000);
+}
+
 TEST(Metres, AddTwoMetres) {
   using namespace phy::literals;
 
@@ -223,9 +229,9 @@ TEST(Units, MultipleAdd){
   phy :: Qty <phy::Metre , std :: centi > cm (15);
   phy :: Qty <phy::Metre , std :: milli > mm (123);
   phy :: Qty <phy::Metre > m (1);
-  auto res1 = cm + mm; //150 + 123
+  auto res1 = cm + mm; //15cm + 123mm = 273mm
   EXPECT_EQ(res1.value, 273);
-  auto res2 = res1 + m; //273 + 1000
+  auto res2 = res1 + m; //273mm + 1m = 1273mm
   EXPECT_EQ(res2.value, 1273);
 }
 

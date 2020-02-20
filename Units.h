@@ -132,27 +132,61 @@ bool operator>=(Qty<U, R1> q1, Qty<U, R2> q2) {
 /*
  * Arithmetic operators
  */
+// template<class T, class F>
+// struct conditional<false, T, F> { typedef F type; };
+//
+// typedef std::conditional<std::ratio_greater<R1,R2>::value, R1, R2>::type Type;
+//
+// template<typename U, typename R1, typename R2>
+// Qty<U, Type> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
+//   printf("R1 ratio : %jd/%jd\n", R1::num, R1::den);
+//   printf("R2 ratio : %jd/%jd\n", R2::num, R2::den);
+//
+//   typedef std::ratio_divide<R1, R2> newRatio;
+//
+//   //printf("new ratio : %jd/%jd\n", newRatio::num, newRatio::den);
+//
+//   intmax_t sum = q1.value + q2.value;
+//
+//   if(std::ratio_greater<R1,R2>::value){
+//       auto q1_convert = qtyCast<Qty<U, R2>>(q1);
+//       printf("vall1 : %d\n",q1_convert.value);
+//       sum = q1_convert.value+q2.value;
+//   }else if(std::ratio_less<R1,R2>::value){
+//       auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+//       printf("before : %d - after: %d\n",q2.value, q2_convert.value);
+//       sum = q2_convert.value+q1.value;
+//   }
+//
+//   auto cont = Qty<U, newRatio>(sum);
+//   return cont;
+// }
 
 template <typename U, typename R1, typename R2>
-Qty<U, std::ratio_divide<R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
+ Qty<U,typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
   printf("R1 ratio : %jd/%jd\n", R1::num, R1::den);
   printf("R2 ratio : %jd/%jd\n", R2::num, R2::den);
 
-  typedef std::ratio_divide<R1, R2> newRatio;
-
-  //printf("new ratio : %jd/%jd\n", newRatio::num, newRatio::den);
+ typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
 
   intmax_t sum = q1.value + q2.value;
 
-  if(std::ratio_greater<R1,R2>::value){
-      auto q1_convert = qtyCast<Qty<U, R2>>(q1);
-      printf("vall1 : %d\n",q1_convert.value);
-      sum = q1_convert.value+q2.value;
-  }else if(std::ratio_less<R1,R2>::value){
-      auto q2_convert = qtyCast<Qty<U, R1>>(q2);
-      printf("before : %d - after: %d\n",q2.value, q2_convert.value);
-      sum = q2_convert.value+q1.value;
+  if (std::ratio_greater<R1, R2>::value) {
+    auto q1_convert = qtyCast<Qty<U, R2>>(q1);
+    printf("convert greater : %jd\n", q1_convert.value);
+    sum = (q1_convert.value) + (q2.value);
+    printf("was greater : %jd\n", sum);
+
+
+  } else if (std::ratio_less<R1, R2>::value) {
+    auto q2_convert = qtyCast<Qty<U, R1>>(q2);
+    printf("convert lesser : %jd\n", q2_convert.value);
+    sum = (q2_convert.value + q1.value);
+    printf("was lesser : %jd\n", sum);
+
   }
+
+  printf("new ratio : %jd/%jd\n", newRatio::num, newRatio::den);
 
   auto cont = Qty<U, newRatio>(sum);
   return cont;
