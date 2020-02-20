@@ -10,13 +10,20 @@ int main(int argc, char *argv[]) {
   return RUN_ALL_TESTS();
 }
 
-TEST(Metres, Cast) {
+TEST(Cast, DeciToKilo) {
   phy::Qty <phy::Metre, std::deci> mm (101245);
   auto nm = phy::qtyCast <phy::Qty <phy::Metre , std::kilo >>(mm);
 
   std::cout<<nm.value<<"\n";
 
   ASSERT_EQ(nm.value, 10);
+}
+
+
+TEST(Cast, FootToMeter){
+  phy::Qty <phy::Metre, phy::Foot::Ratio> foot(42);
+  auto m = phy::qtyCast <phy::Qty <phy::Metre>>(foot);
+  EXPECT_EQ(m.value, 12);
 }
 
 TEST(Metres, AddTwoMetres) {
@@ -157,5 +164,15 @@ TEST(Units, OperatorPlus){
   auto resmm2 = mm2 + mm;
   EXPECT_EQ(resmm2.value, 64);
   auto resmm3 = foot + m;
-  EXPECT_EQ(resmm3.value, 22);
+  EXPECT_EQ(resmm3.value, 74);
+}
+
+TEST(Units, MultipleAdd){
+  phy :: Qty <phy::Metre , std :: centi > cm (15);
+  phy :: Qty <phy::Metre , std :: milli > mm (123);
+  phy :: Qty <phy::Metre > m (1);
+  auto res1 = cm + mm; //150 + 123
+  EXPECT_EQ(res1.value, 273);
+  auto res2 = res1 + m; //273 + 1000
+  EXPECT_EQ(res2.value, 1273);
 }
