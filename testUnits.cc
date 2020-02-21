@@ -213,7 +213,7 @@ TEST(Units, MultipleSubstract){
 }
 
 TEST(Units, MultipleMultiplicate){
-  phy :: Qty <phy::Metre  > m1 (2);
+  phy :: Qty <phy::Metre > m1 (2);
   phy :: Qty <phy::Metre > m2 (10);
   auto res1 = m1 * m2; //2m * 10 m = 20m2
   EXPECT_EQ(res1.value, 20);
@@ -221,16 +221,15 @@ TEST(Units, MultipleMultiplicate){
   EXPECT_EQ(res3.value, 40); //Cubed meters
 }
 
-// TEST(Units, MultipleMultiplicateFoot){
-//   phy :: Qty <phy::Metre , phy::Foot::Ratio > foot (1);
-//   phy :: Qty <phy::Metre , std::centi > cm (60);
-//   phy :: Qty <phy::Metre ,std::milli> mm (1);
-//   auto res1 = cm * foot; //1 foot * 60cm = 1800cm2
-//   EXPECT_EQ(res1.value, 1800);
-//   auto res3 = res1 * mm; // 1800cm2 * 1mm = 4000m3
-//   EXPECT_EQ(res3.value, 621);
-//
-// }
+TEST(Units, MultipleMultiplicateFoot){
+  phy :: Qty <phy::Metre , phy::Foot::Ratio > foot (1);
+  phy :: Qty <phy::Metre , std::centi > cm (60);
+  phy :: Qty <phy::Metre ,std::milli> mm (2);
+  auto res1 = cm * foot; //1 foot * 60cm = 1800cm2
+  EXPECT_EQ(res1.value, 1800);
+  auto res3 = res1 * mm; // 1800cm2 * 2mm = 36000mm3
+  EXPECT_EQ(res3.value, 36000);
+}
 
 TEST(Units, MultipleDivide){
   phy :: Qty <phy::Metre , std::kilo > km (12);
@@ -242,15 +241,15 @@ TEST(Units, MultipleDivide){
   EXPECT_EQ(res2.value, 2);
 }
 
-// TEST(Units, MultipleDivideFoot){
-//   phy :: Qty <phy::Metre , phy::Foot::Ratio > foot (1);
-//   phy :: Qty <phy::Metre , std::centi > cm (3);
-//   phy :: Qty <phy::Metre ,std::milli> mm (5);
-//   auto res1 = foot / cm; //1 foot / 3cm = 10
-//   EXPECT_EQ(res1.value, 10);
-//   auto res3 = res1 / mm; // 10 / 5mm = 2mm-1
-//   EXPECT_EQ(res3.value, 2);
-// }
+TEST(Units, MultipleDivideFoot){
+  phy :: Qty <phy::Metre , phy::Foot::Ratio > foot (1);
+  phy :: Qty <phy::Metre , std::centi > cm (3);
+  phy :: Qty <phy::Metre ,std::milli> mm (5);
+  auto res1 = foot / cm; //1 foot / 3cm = 10
+  EXPECT_EQ(res1.value, 10);
+  auto res3 = res1 / mm; // 10 / 5mm = 2mm-1
+  EXPECT_EQ(res3.value, 2);
+}
 
 TEST(Units, MilliMultiAdd) {
   using namespace phy::literals;
@@ -284,15 +283,15 @@ TEST(Units, Speed_MPerS) {
   EXPECT_EQ(velocity.value, 27);
 }
 
-// TEST(Units, Speed_KmPerH) {
-//   using namespace phy::literals;
-//
-//   phy::Qty<phy::Metre, std::kilo> km(100); // 100km
-//   phy::Qty<phy::Second, std::ratio<3600, 1>> h(1); // 1h
-//
-//   auto velocity = km/h; // 100 km/h
-//   EXPECT_EQ(velocity.value, 100);
-// }
+TEST(Units, Speed_KmPerH) {
+  using namespace phy::literals;
+
+  phy::Qty<phy::Metre, std::kilo> km(100); // 100km
+  phy::Qty<phy::Second, std::ratio<3600, 1>> h(1); // 1h
+
+  auto velocity = km/h; // 100 km/h
+  EXPECT_EQ(velocity.value, 100);
+}
 
 /* check the validity of the units */
 TEST(ValidUnit, DivideNoUnitPerMeter){

@@ -160,12 +160,12 @@ Qty<U, AdditionReturnRatio<U, R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
 /*
  * to generate the new ratio on compilation
  */
-template <typename U, typename R1, typename R2>
+template <typename R1, typename R2>
 using SubReturnRatio =
     typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type;
 
 template <typename U, typename R1, typename R2>
-Qty<U, SubReturnRatio<U, R1, R2>> operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
+Qty<U, SubReturnRatio<R1, R2>> operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
 
   intmax_t sub = q1.value - q2.value;
 
@@ -177,7 +177,7 @@ Qty<U, SubReturnRatio<U, R1, R2>> operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
     sub = q1.value - q2_convert.value;
   }
 
-  return Qty<U, SubReturnRatio<U, R1, R2>>(sub);
+  return Qty<U, SubReturnRatio<R1, R2>>(sub);
 }
 
 /*
@@ -189,13 +189,21 @@ using MultiReturnUnit = Unit<U1::metre + U2::metre, U1::kilogram + U2::kilogram,
                              U1::kelvin + U2::kelvin, U1::mole + U2::mole,
                              U1::candela + U2::candela>;
 
+/*
+ * If U1 == U2 we convert the unit in the smaller ratio and apply the multiplication
+ * Else we combine the ratio of the two value
+*/
+
+template <typename R1, typename R2>
+using MultiReturnRatio =
+    typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type;
+
 template <typename U1, typename R1, typename U2, typename R2>
-Qty<MultiReturnUnit<U1, U2>, std::ratio_divide<R1, R2>>
+Qty<MultiReturnUnit<U1, U2>, MultiReturnRatio<R1, R2>>
 operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
 
-  typedef std::ratio_divide<R1, R2> newRatio;
-
   intmax_t mul = q1.value * q2.value;
+
   if (std::ratio_greater<R1, R2>::value) {
 
     auto q1_convert = qtyCast<Qty<U1, R2>>(q1);
@@ -207,7 +215,7 @@ operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
     mul = q1.value * q2_convert.value;
   }
 
-  return Qty<MultiReturnUnit<U1,U2>, newRatio>(mul);
+  return Qty<MultiReturnUnit<U1,U2>, MultiReturnRatio<R1, R2>>(mul);
 }
 
 template <typename U1,typename U2>
@@ -220,9 +228,12 @@ using DivideReturnUnit = Unit<U1::metre - U2::metre, U1::kilogram - U2::kilogram
   * If DivideReturnUnit is composed with only 0, the division is without unit.
   * In this case the ratio is 0, else it's a combine of the ratio of the 2 number.
 */
-
 template <typename U1, typename R1, typename U2, typename R2>
-Qty<DivideReturnUnit<U1,U2>, typename std::conditional<(DivideReturnUnit<U1, U2>::metre == 0 && DivideReturnUnit<U1, U2>::kilogram == 0 && DivideReturnUnit<U1, U2>::second == 0 && DivideReturnUnit<U1, U2>::ampere == 0 && DivideReturnUnit<U1, U2>::kelvin == 0 && DivideReturnUnit<U1, U2>::mole == 0 && DivideReturnUnit<U1, U2>::candela == 0), std::ratio<1>, std::ratio_divide<R1, R2>>::type>
+Qty<DivideReturnUnit<U1,U2>, typename std::conditional<
+      (DivideReturnUnit<U1, U2>::metre == 0 && DivideReturnUnit<U1, U2>::kilogram == 0 &&
+        DivideReturnUnit<U1, U2>::second == 0 && DivideReturnUnit<U1, U2>::ampere == 0 &&
+        DivideReturnUnit<U1, U2>::kelvin == 0 && DivideReturnUnit<U1, U2>::mole == 0 &&
+        DivideReturnUnit<U1, U2>::candela == 0), std::ratio<1>, std::ratio_divide<R1, R2>>::type>
 operator/(Qty<U1, R1> q1, Qty<U2, R2> q2) {
 
   typedef
@@ -232,7 +243,7 @@ operator/(Qty<U1, R1> q1, Qty<U2, R2> q2) {
                                 DivideReturnUnit<U1, U2>::candela == 0),
                               std::ratio<1>, std::ratio_divide<R1, R2>>::type newRatio;
 
-  intmax_t div = (q1.value / q2.value) * (R1::num*R2::den)/(R1::den*R2::num);
+  intmax_t div = (q1.value / q2.value);// * (R1::num*R2::den)/(R1::den*R2::num);
 
   if (std::ratio_greater<R1, R2>::value) {
     auto q1_convert = qtyCast<Qty<U1 , R2>>(q1);
