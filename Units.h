@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <ratio>
 #include <stdio.h>
+
+//*
 namespace phy {
 
 /*
@@ -132,83 +134,96 @@ bool operator>=(Qty<U, R1> q1, Qty<U, R2> q2) {
 /*
  * Arithmetic operators
  */
+
+/*
+ * to generate the new ratio on compilation
+ */
 template <typename U, typename R1, typename R2>
-Qty<U,typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
+using AdditionReturnRatio =
+    typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type;
 
-  typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
-
+template <typename U, typename R1, typename R2>
+Qty<U, AdditionReturnRatio<U, R1, R2>> operator+(Qty<U, R1> q1, Qty<U, R2> q2) {
   intmax_t sum = q1.value + q2.value;
 
-  if (std::ratio_greater<R1, R2>::value)
-  {
+  if (std::ratio_greater<R1, R2>::value) {
     auto q1_convert = qtyCast<Qty<U, R2>>(q1);
     sum = q1_convert.value + q2.value;
-  }
-  else if (std::ratio_less<R1, R2>::value)
-  {
+  } else if (std::ratio_less<R1, R2>::value) {
     auto q2_convert = qtyCast<Qty<U, R1>>(q2);
     sum = q2_convert.value + q1.value;
   }
 
-  return Qty<U, newRatio>(sum);
+  return Qty<U, AdditionReturnRatio<U, R1, R2>>(sum);
 }
 
+/*
+ * to generate the new ratio on compilation
+ */
 template <typename U, typename R1, typename R2>
-Qty<U, typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
+using SubReturnRatio =
+    typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type;
 
-  typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
+template <typename U, typename R1, typename R2>
+Qty<U, SubReturnRatio<U, R1, R2>> operator-(Qty<U, R1> q1, Qty<U, R2> q2) {
 
   intmax_t sub = q1.value - q2.value;
 
-  if (std::ratio_greater<R1, R2>::value)
-  {
+  if (std::ratio_greater<R1, R2>::value) {
     auto q1_convert = qtyCast<Qty<U, R2>>(q1);
     sub = q1_convert.value - q2.value;
-  }
-  else if (std::ratio_less<R1, R2>::value)
-  {
+  } else if (std::ratio_less<R1, R2>::value) {
     auto q2_convert = qtyCast<Qty<U, R1>>(q2);
     sub = q1.value - q2_convert.value;
   }
 
-  return Qty<U, newRatio>(sub);
+  return Qty<U, SubReturnRatio<U, R1, R2>>(sub);
 }
 
+/*
+ * Calculate the return Unit on compilation
+ */
 template <typename U1, typename R1, typename U2, typename R2>
-Qty<U1, typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
+using MultiReturnUnit = Unit<U1::metre + U2::metre, U1::kilogram + U2::kilogram,
+                             U1::second + U2::second, U1::ampere + U2::ampere,
+                             U1::kelvin + U2::kelvin, U1::mole + U2::mole,
+                             U1::candela + U2::candela>;
 
-  typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
+template <typename U1, typename R1, typename U2, typename R2>
+Qty<MultiReturnUnit<U1, R1, U2, R2>, std::ratio_divide<R1, R2>>
+operator*(Qty<U1, R1> q1, Qty<U2, R2> q2) {
+
+  typedef std::ratio_divide<R1, R2> newRatio;
 
   intmax_t mul = q1.value * q2.value;
+  if (std::ratio_greater<R1, R2>::value) {
 
-  if (std::ratio_greater<R1, R2>::value)
-  {
     auto q1_convert = qtyCast<Qty<U1, R2>>(q1);
     mul = q1_convert.value * q2.value;
-  }
-  else if (std::ratio_less<R1, R2>::value)
-  {
-    auto q2_convert = qtyCast<Qty<U1, R1>>(q2);
+
+  } else if (std::ratio_less<R1, R2>::value) {
+
+    auto q2_convert = qtyCast<Qty<U2, R1>>(q2);
     mul = q1.value * q2_convert.value;
   }
 
-  return Qty<U1, newRatio>(mul);
+  return Qty<MultiReturnUnit<U1, R1, U2, R2>, newRatio>(mul);
 }
 
 template <typename U1, typename R1, typename U2, typename R2>
-Qty<U1, typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type > operator/(Qty<U1, R1> q1, Qty<U2, R2> q2) {
+Qty<U1, typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type>
+operator/(Qty<U1, R1> q1, Qty<U2, R2> q2) {
 
-  typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
+  typedef
+      typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type
+          newRatio;
 
   intmax_t div = q1.value * q2.value;
 
-  if (std::ratio_greater<R1, R2>::value)
-  {
+  if (std::ratio_greater<R1, R2>::value) {
     auto q1_convert = qtyCast<Qty<U1, R2>>(q1);
     div = q1_convert.value / q2.value;
-  }
-  else if (std::ratio_less<R1, R2>::value)
-  {
+  } else if (std::ratio_less<R1, R2>::value) {
     auto q2_convert = qtyCast<Qty<U1, R1>>(q2);
     div = q1.value / q2_convert.value;
   }
@@ -217,38 +232,38 @@ Qty<U1, typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type 
 }
 
 namespace literals {
-  /*
-   * Some user-defined literals
-   */
+/*
+ * Some user-defined literals
+ */
 
-  Length operator"" _metres(unsigned long long int val) {
-    return Qty<Metre, std::ratio<1, 1>>(val);
-  }
-  Mass operator"" _kilograms(unsigned long long int val) {
-    return Qty<Kilogram, std::ratio<1, 1>>(val);
-  }
-  Time operator"" _seconds(unsigned long long int val) {
-    return Qty<Second, std::ratio<1, 1>>(val);
-  }
-  Current operator"" _amperes(unsigned long long int val) {
-    return Qty<Ampere, std::ratio<1, 1>>(val);
-  }
-  Temperature operator"" _kelvins(unsigned long long int val) {
-    return Qty<Kelvin, std::ratio<1, 1>>(val);
-  }
-  Amount operator"" _moles(unsigned long long int val) {
-    return Qty<Mole, std::ratio<1, 1>>(val);
-  }
-  LuminousIntensity operator"" _candelas(unsigned long long int val) {
-    return Qty<Candela, std::ratio<1, 1>>(val);
-  }
+Length operator"" _metres(unsigned long long int val) {
+  return Qty<Metre, std::ratio<1, 1>>(val);
+}
+Mass operator"" _kilograms(unsigned long long int val) {
+  return Qty<Kilogram, std::ratio<1, 1>>(val);
+}
+Time operator"" _seconds(unsigned long long int val) {
+  return Qty<Second, std::ratio<1, 1>>(val);
+}
+Current operator"" _amperes(unsigned long long int val) {
+  return Qty<Ampere, std::ratio<1, 1>>(val);
+}
+Temperature operator"" _kelvins(unsigned long long int val) {
+  return Qty<Kelvin, std::ratio<1, 1>>(val);
+}
+Amount operator"" _moles(unsigned long long int val) {
+  return Qty<Mole, std::ratio<1, 1>>(val);
+}
+LuminousIntensity operator"" _candelas(unsigned long long int val) {
+  return Qty<Candela, std::ratio<1, 1>>(val);
+}
 
 } // namespace literals
 
 namespace details {
-  using Velocity = Unit<1, 0, -1, 0, 0, 0, 0>;
-
-}
+using Velocity = Unit<1, 0, -1, 0, 0, 0, 0>;
+using Litre = Unit<3, 0, 0, 0, 0, 0, 0>;
+} // namespace details
 
 } // namespace phy
 

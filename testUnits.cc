@@ -151,10 +151,9 @@ TEST(Metres, MilliAdd) {
 TEST(Metres, MilliMult) {
   using namespace phy::literals;
 
-  // auto velocity = 100000_metres / 3600_seconds; // 100 km/h
   phy::Length length = 5_metres;
   phy::Qty<phy::Metre, std::milli> length2(3); // 3 mm
-  auto result = length * length2;
+  auto result = length * length2; //15000mm2
 
   std::cout << result.value << std::endl;
   EXPECT_EQ(result.value, 15000);
@@ -223,6 +222,7 @@ TEST(Length, addDiffrentRatios) {
   auto res = foot + mm;
   EXPECT_EQ(res.value, 12853);
 
+
 }
 
 TEST(Units, MultipleAdd){
@@ -249,13 +249,23 @@ TEST(Units, MultipleSubstract){
 }
 
 TEST(Units, MultipleMultiplicate){
-  phy :: Qty <phy::Metre , std::kilo > km (2);
-  phy :: Qty <phy::Metre , std::hecto > hm (10);
-  phy :: Qty <phy::Metre > m (200);
-  auto res1 = km * hm; //2km * 10hm = 20hm
+  phy :: Qty <phy::Metre  > m1 (2);
+  phy :: Qty <phy::Metre > m2 (10);
+  auto res1 = m1 * m2; //2m * 10 m = 20m2
   EXPECT_EQ(res1.value, 20);
-  auto res2 = res1 - m; // 20hm * 2m = 4000m
-  EXPECT_EQ(res2.value, 4000);
+  auto res3 = res1 * m1; // 20m2 * 2m = 40 000 liters = 40 m3
+  EXPECT_EQ(res3.value, 40); //Cubed meters
+}
+
+TEST(Units, MultipleMultiplicateFoot){
+  phy :: Qty <phy::Metre , phy::Foot::Ratio > foot (1);
+  phy :: Qty <phy::Metre , std::centi > cm (60);
+  phy :: Qty <phy::Metre ,std::milli> mm (1);
+  auto res1 = cm * foot; //1 foot * 60cm = 1800cm2
+  EXPECT_EQ(res1.value, 1800);
+  auto res3 = res1 * mm; // 1800cm2 * 1mm = 4000m
+  EXPECT_EQ(res3.value, 621);
+
 }
 
 TEST(Units, MultipleDivide){
@@ -281,4 +291,21 @@ TEST(Metres, MilliMultiAdd) {
 
   EXPECT_EQ(result.value, 5003);
  EXPECT_EQ(result2.value, 5006);
+}
+
+
+
+TEST(Metres, MilliMultiAdd2) {
+  using namespace phy::literals;
+
+  // auto velocity = 100000_metres / 3600_seconds; // 100 km/h
+  phy::Length length = 5_metres;
+  phy::Qty<phy::Metre, std::milli> length2(3); // 3 mm
+  auto result =  length2 + length;
+  auto result2 =  length2 + result;
+
+  std::cout << result.value << std::endl;
+  std::cout << result2.value << std::endl;
+
+  EXPECT_EQ(result.value, 5003);
 }
