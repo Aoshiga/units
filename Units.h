@@ -200,7 +200,7 @@ Qty<U1, typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type 
 
   typedef typename std::conditional<std::ratio_less<R1, R2>::value, R1, R2>::type newRatio;
 
-  intmax_t div = q1.value * q2.value;
+  intmax_t div = q1.value / q2.value;
 
   if (std::ratio_greater<R1, R2>::value)
   {
