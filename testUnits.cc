@@ -293,6 +293,37 @@ TEST(Units, Speed_KmPerH) {
   EXPECT_EQ(velocity.value, 100);
 }
 
+TEST(Units, U_equal_RI) {
+  using namespace phy::literals;
+  using namespace phy::details;
+
+  phy::Qty<ElectricalResistance> r(7); // 7 ohm
+  phy::Qty<Ampere> i(10); // 10 ampere
+  phy::Qty<Voltage> u(70); // 70 volt
+
+  EXPECT_EQ(u, r*i);
+  EXPECT_EQ(typeid(u), typeid(r*i));
+}
+
+TEST(Units, MolarConcentration) {
+  using namespace phy::literals;
+  using namespace phy::details;
+
+  phy::Qty<Kilogram> g1(48);
+  phy::Qty<Volume> v(8);
+  phy::Qty<Kilogram> g2(15);
+  phy::Qty<Mole> m(5);
+
+  phy::Qty<MolarConcentration> mc(2); // 70 mol par m3
+
+  EXPECT_EQ((g1/v)/(g2/m), mc);
+  EXPECT_EQ(typeid((g1/v)/(g2/m)), typeid(mc));
+  EXPECT_NE(typeid(g1), typeid(mc));
+  EXPECT_NE(typeid(g2), typeid(mc));
+  EXPECT_NE(typeid(v), typeid(mc));
+  EXPECT_NE(typeid(m), typeid(mc));
+}
+
 /* check the validity of the units */
 TEST(ValidUnit, DivideNoUnitPerMeter){
   phy :: Qty <phy::Unit<0,0,0,0,0,0,0> > noUnit (10);
